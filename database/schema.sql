@@ -1,29 +1,41 @@
--- Users Table
+CREATE DATABASE IF NOT EXISTS store_rating_db;
+USE store_rating_db;
+
 CREATE TABLE users (
-  id INT PRIMARY KEY AUTO_INCREMENT,
+  id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(60) NOT NULL,
-  email VARCHAR(100) UNIQUE NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
   address VARCHAR(400),
-  role ENUM('admin','user','owner') DEFAULT 'user'
+  role ENUM('admin','user','owner') DEFAULT 'user',
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Stores Table
 CREATE TABLE stores (
-  id INT PRIMARY KEY AUTO_INCREMENT,
+  id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(60) NOT NULL,
-  email VARCHAR(100) UNIQUE,
+  email VARCHAR(100),
   address VARCHAR(400),
   owner_id INT,
-  FOREIGN KEY (owner_id) REFERENCES users(id)
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
--- Ratings Table
 CREATE TABLE ratings (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  store_id INT,
-  user_id INT,
-  rating INT CHECK (rating BETWEEN 1 AND 5),
-  FOREIGN KEY (store_id) REFERENCES stores(id),
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  store_id INT NOT NULL,
+  user_id INT NOT NULL,
+  rating TINYINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (store_id) REFERENCES stores(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  UNIQUE KEY uniq_user_store (store_id, user_id)
 );
+
+-- Indexes for fast searching
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_stores_name ON stores(name);
+CREATE INDEX idx_stores_address ON stores(address);
