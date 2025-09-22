@@ -1,0 +1,25 @@
+const express = require("express");
+const router = express.Router();
+const Rating = require("../models/Rating");
+
+// Submit or update rating
+router.post("/", async (req,res) => {
+  try {
+    const { userId, storeId, rating } = req.body;
+    if(!(rating >=1 && rating <=5)) return res.status(400).send("Rating must be 1-5");
+
+    // if exists update else create
+    const existing = await Rating.findOne({ where: { userId, storeId }});
+    if(existing) {
+      existing.rating = rating;
+      await existing.save();
+      return res.json(existing);
+    }
+    const newR = await Rating.create({ userId, storeId, rating });
+    res.json(newR);
+  } catch(err) {
+    console.error(err); res.status(500).send("Server error");
+  }
+});
+
+module.exports = router;
