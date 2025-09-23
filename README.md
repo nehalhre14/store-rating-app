@@ -19,6 +19,4 @@ This repo contains a minimal but functional skeleton for the FullStack Intern Co
    - npm install
    - npm start
 
-## Notes
-- This is a starter skeleton to meet the submission requirement quickly.
-- For full features (sorting, admin filters, owner dashboard details) implement UI tables and additional endpoints.
+
